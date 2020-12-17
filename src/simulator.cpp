@@ -17,13 +17,6 @@ Simulator::Simulator(MemHrchyInfo* info) {
 	//initializing core
 	pipe = new PipeState();
 
-	/*
-	 * initializing memory hierarchy
-	 *  you should update this for adding the caches
-	 */
-	main_memory = new BaseMemory(info->memDelay);
-	main_memory->next = nullptr;
-
 	// CSE530: add caches
 	main_memory = new BaseMemory(info->memDelay);
 	l1DCache = new Cache(info->cache_size_l1, info->cache_assoc_l1, info->cache_blk_size, info->repl_policy_l1d, info->access_delay_l1, L1D);

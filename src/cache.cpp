@@ -147,7 +147,7 @@ bool Cache::sendReq(Packet * pkt){
 			pkt->cacheBlockData = blkDataFill;
 		}
 
-		this->next->sendReq(pkt);
+		return this->next->sendReq(pkt);
 	}
 	else {
 		if(pkt->isWrite) {
@@ -156,16 +156,22 @@ bool Cache::sendReq(Packet * pkt){
 			updateBlockDataWithPktData(block, pkt);
 
 			// write-through policy so send the pkt to next level
-			this->next->sendReq(pkt);
+			return this->next->sendReq(pkt);
 		}
 		else {
-			updatePktDataWithBlockData(block, pkt);
-			reqQueue.push(pkt);
+			if(reqQueue.size() < reqQueueCapacity) {
+				updatePktDataWithBlockData(block, pkt);
+				reqQueue.push(pkt);
+
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		
 		replPolicy->update(pkt->addr, getWay(pkt->addr), pkt->isWrite);
 	}
-	return true;
 }
 
 void Cache::recvResp(Packet* readRespPkt){
